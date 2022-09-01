@@ -1,0 +1,23 @@
+{
+  "name": "repo_DateTimeAPI",
+  "version": "1.0.0",
+  "description": "The API is created with:\r * NodeJS\r * Express",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/samibris/DatetimeAPI.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/samibris/DatetimeAPI/issues"
+  },
+  "homepage": "https://github.com/samibris/DatetimeAPI#readme",
+  "dependencies": {
+    "express": "^4.18.1"
+  }
+}
