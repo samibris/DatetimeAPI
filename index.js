@@ -1,4 +1,7 @@
 const express = require('express');
+const moment = require('moment-timezone');
+var momentDurationFormat = require("moment-duration-format");
+
 const app = express();
 
 app.use(express.json());
@@ -18,15 +21,27 @@ app.post("/datetime", (req, res) => {
     switch(joption){
         // Find out number of days
         case '1':
-            fn_Days();
+            //fn_Days();
+            var a = moment.tz("2013-11-17T01:55:10", "America/Bogota");
+            var b = moment.tz("2013-11-17T23:55:30", "Australia/Adelaide");
+            console.log(a);
+            console.log(b);
+            console.log(a.diff(b, 'days'));
+            var duration = moment.duration(b.diff(a));
+            var t3 = duration.hours() + ":" + duration.minutes() + ":" + duration.seconds();
+            console.log(t3);
+            console.log(duration.hours());
+            console.log(duration.minutes());
+            console.log(duration.seconds());
+
             break;       
         // Find out number of weekdays
         case '2':
-            fn_Weekdays();
+            //fn_Weekdays();
             break;
         // Find out number of complete weeks
         case '3':
-            fn_CmpWeeks();
+            //fn_CmpWeeks();
             break;
         // return error message
         default:

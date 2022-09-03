@@ -11,6 +11,8 @@ The API is created with:
 $ npm init -y  // New NodeJS project
 $ package.json --> "start": "node index.js"
 $ npm install express
+npm install moment-timezone
+npm install moment-duration-format
 
 ## Code Examples
 
