@@ -14,6 +14,7 @@ npm install express
 npm install moment-timezone
 npm install moment-duration-format
 npm install moment-business-days
+npm install validator
 
 ## Code Examples
 

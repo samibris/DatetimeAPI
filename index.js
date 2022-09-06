@@ -1,93 +1,98 @@
+/*
+INDEX.JS
+@AUTHOR: Sandra Bonilla <samibris@gmail.com>
+@VERSION: 1.0
+*/ 
+
 const express = require('express');
 const moment = require('moment-timezone');
 var momentDurationFormat = require("moment-duration-format");
 var momentBusinessDays = require('moment-business-days');
+var validator = require('validator');
 
 const app = express();
 
 app.use(express.json());
 
 app.post("/datetime", (req, res) => {
-    // Read datetime 1
+    var result = '';
+    // Read input data
     const jdatetime1 = req.body.datetime1;
     const jzone1 = req.body.zone1;
-    // Read datetime2
     const jdatetime2 = req.body.datetime2;
     const jzone2 = req.body.zone2;
-    // Read operation to do
     const joption = req.body.option;
+    
+    // Validate input data
+    if (!moment(jdatetime1, 'YYYY-MM-DD[T]HH:mm:ss', true).isValid()){ 
+        result= 'datetime1 invalid.';
+    }
+    if (!moment(jdatetime2, 'YYYY-MM-DD[T]HH:mm:ss', true).isValid()){ 
+        result+= ' datetime2 invalid.';
+    }
+    if (!moment.tz.zone(jzone1)){
+        result+=  ' zone1 invalid.';
+    }
+    if (!moment.tz.zone(jzone2)){
+        result+= ' zone2 invalid.';
+    }
 
-    switch(joption){
-        // Find out number of days
-        case '1':
-            //fn_Days();
-            //var a = moment.tz("2013-11-17T01:55:10", "America/Bogota");
-            /*var b = moment.tz("2013-11-17T23:55:30", "Australia/Adelaide");
-            console.log(a);
-            console.log(b);
-            console.log(a.diff(b, 'days'));
-            var duration = moment.duration(b.diff(a));
-            var t3 = duration.hours() + ":" + duration.minutes() + ":" + duration.seconds();
-            console.log(t3);
-            console.log(duration.hours());
-            console.log(duration.minutes());
-            console.log(duration.seconds());*/
-            var datezone1 = moment.tz(jdatetime1, jzone1);
-            var datezone2 = moment.tz(jdatetime2, jzone2);
-            console.log(datezone1);
-            console.log(datezone2);
-            if(datezone1 > datezone2){
-                tmp = datezone1;
-                datezone1 = datezone2;
-                datezone2 = tmp;
-            }
+    // Calculate values if there is no errors
+    if (result == ''){
+        // Convert to provided time zone
+        var datezone1 = moment.tz(jdatetime1, jzone1);
+        var datezone2 = moment.tz(jdatetime2, jzone2);
+        console.log(datezone1);
+        console.log(datezone2);
 
-            resDays= datezone2.diff(datezone1, 'days', true);
-            resWeekDays = datezone2.businessDiff(datezone1);
-            resCmpWeeks= datezone2.diff(datezone1, 'weeks', true);
-            //var duration = moment.duration(datezone2.diff(datezone1));
-            resSec= datezone2.diff(datezone1, 'seconds', true);
-            resMin= datezone2.diff(datezone1, 'minutes', true);
-            resHrs= datezone2.diff(datezone1, 'hours', true);
-            resYears= datezone2.diff(datezone1, 'years', true);
-            console.log("IS LOWER");  
-                  
-                
-           /* }else{
-                resDays= datezone1.diff(datezone2, 'days', true);
-                resWeekDays = datezone1.businessDiff(datezone2);
-                resCmpWeeks= datezone1.diff(datezone2, 'weeks', true);
-                //var duration = moment.duration(datezone1.diff(datezone2));
-                resSec= datezone1.diff(datezone2, 'seconds', true);
-                resMin= datezone1.diff(datezone2, 'minutes', true);
-                resHrs= datezone1.diff(datezone2, 'hours', true);
-                resYears= datezone1.diff(datezone2, 'years', true);
-                console.log("IS GREATER");    */  
-           
-            //resDays= datezone1.diff(datezone2, 'days');
-            console.log("days: " + resDays);  
-            console.log("Week days: " + resWeekDays); 
-            console.log("Complete weeks: " + resCmpWeeks);      
-           // var t3 = duration.hours() + ":" + duration.minutes() + ":" + duration.seconds();
-           // console.log(t3);   
-            console.log("seconds: " + resSec);
-            console.log("minutes: " + resMin);
-            console.log("hours: " + resHrs);
-            console.log("years: " + resYears);
-            //console.log(duration);
+        // to avoid negative results, datezone1 is the earliest date
+        if(datezone1 > datezone2){
+            tmp = datezone1;
+            datezone1 = datezone2;
+            datezone2 = tmp;
+        }
+        // calculate number of days
+        resDays= datezone2.diff(datezone1, 'days');
+        // calculate number of weekdays
+        resWeekDays = datezone2.businessDiff(datezone1);
+        // calculate complete weeks
+        resCmpWeeks= datezone2.diff(datezone1, 'weeks');
 
+        // convert the result to seconds, minutes, hours or years
+        switch(joption){
+        // Convert to seconds
+        case 's': case 'S':
+            result= datezone2.diff(datezone1, 'seconds', true).toFixed(2) + ' seconds';
             break;       
-        // Find out number of weekdays
-        case '2':
-            //fn_Weekdays();
+        // Convert to minutes
+        case 'm': case 'M':
+            result= datezone2.diff(datezone1, 'minutes', true).toFixed(2) + ' minutes';
             break;
-        // Find out number of complete weeks
-        case '3':
-            //fn_CmpWeeks();
+        // Convert to hours
+        case 'h': case 'H':
+            result= datezone2.diff(datezone1, 'hours', true).toFixed(2) + ' hours';
+            break;
+        // Convert to years
+        case 'y': case 'Y':
+            result= datezone2.diff(datezone1, 'years', true).toFixed(2) + ' years';
             break;
         // return error message
         default:
-            res.json({ message: 'Error - Invalid option'});
+            result= 'Invalid option.';
+        }
+
+        // return JSON message
+        res.json({ 
+            days: resDays,
+            weekdays: resWeekDays,
+            completeWeeks: resCmpWeeks,
+            result: result
+        });
+    //Return JSON with error messages
+    }else{
+        res.status(400).json({ 
+            result: result
+        });
     }
     
 });
