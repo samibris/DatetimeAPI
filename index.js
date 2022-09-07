@@ -6,16 +6,31 @@ INDEX.JS
 
 const express = require('express');
 const moment = require('moment-timezone');
-var momentDurationFormat = require("moment-duration-format");
 var momentBusinessDays = require('moment-business-days');
-var validator = require('validator');
+const { validate } = require('jsonschema');
+const dtSchema = require('./dtSchema.json');
 
 const app = express();
 
 app.use(express.json());
 
 app.post("/datetime", (req, res) => {
-    var result = '';
+    const resValidate = validate(req.body, dtSchema);
+
+  // validate if the input data match with the schema
+  if (!resValidate.valid) {
+
+    // pass validation errors from the key stack
+    var msgerror = resValidate.errors.map(error => error.stack);
+
+    // return JSON with error messages
+    return res.status(500).json({ 
+        result: msgerror
+    });
+
+  }
+
+    const resValData = [];
     // Read input data
     const jdatetime1 = req.body.datetime1;
     const jzone1 = req.body.zone1;
@@ -25,20 +40,27 @@ app.post("/datetime", (req, res) => {
     
     // Validate input data
     if (!moment(jdatetime1, 'YYYY-MM-DD[T]HH:mm:ss', true).isValid()){ 
-        result= 'datetime1 invalid.';
+        resValData.push('datetime1 invalid.');
     }
     if (!moment(jdatetime2, 'YYYY-MM-DD[T]HH:mm:ss', true).isValid()){ 
-        result+= ' datetime2 invalid.';
+        resValData.push('datetime2 invalid.');
     }
     if (!moment.tz.zone(jzone1)){
-        result+=  ' zone1 invalid.';
+        resValData.push('zone1 invalid.');
     }
     if (!moment.tz.zone(jzone2)){
-        result+= ' zone2 invalid.';
+        resValData.push('zone2 invalid.');
     }
 
-    // Calculate values if there is no errors
-    if (result == ''){
+    // return JSON with error messages
+    if (resValData.length>0){
+        return res.status(400).json({ 
+            result: resValData
+        });
+    }   
+
+    // Calculate values if input data is ok
+        var result = '';
         // Convert to provided time zone
         var datezone1 = moment.tz(jdatetime1, jzone1);
         var datezone2 = moment.tz(jdatetime2, jzone2);
@@ -53,8 +75,10 @@ app.post("/datetime", (req, res) => {
         }
         // calculate number of days
         resDays= datezone2.diff(datezone1, 'days');
+
         // calculate number of weekdays
         resWeekDays = datezone2.businessDiff(datezone1);
+
         // calculate complete weeks
         resCmpWeeks= datezone2.diff(datezone1, 'weeks');
 
@@ -63,19 +87,23 @@ app.post("/datetime", (req, res) => {
         // Convert to seconds
         case 's': case 'S':
             result= datezone2.diff(datezone1, 'seconds', true).toFixed(2) + ' seconds';
-            break;       
+            break;
+
         // Convert to minutes
         case 'm': case 'M':
             result= datezone2.diff(datezone1, 'minutes', true).toFixed(2) + ' minutes';
             break;
+
         // Convert to hours
         case 'h': case 'H':
             result= datezone2.diff(datezone1, 'hours', true).toFixed(2) + ' hours';
             break;
+
         // Convert to years
         case 'y': case 'Y':
             result= datezone2.diff(datezone1, 'years', true).toFixed(2) + ' years';
             break;
+
         // return error message
         default:
             result= 'Invalid option.';
@@ -88,13 +116,7 @@ app.post("/datetime", (req, res) => {
             completeWeeks: resCmpWeeks,
             result: result
         });
-    //Return JSON with error messages
-    }else{
-        res.status(400).json({ 
-            result: result
-        });
-    }
     
 });
 
-app.listen(3000, () => console.log ("API Server is running..."));
+  app.listen(3000, () => console.log ("API Server is running..."));

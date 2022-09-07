@@ -1,0 +1,58 @@
+{
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "default": {},
+    "title": "Root Schema",
+    "required": [
+        "datetime1",
+        "zone1",
+        "datetime2",
+        "zone2",
+        "option"
+    ],
+    "properties": {
+        "datetime1": {
+            "type": "string",
+            "title": "The datetime1 Schema",
+            "examples": [
+                "2020-12-28T14:01:25"
+            ]
+        },
+        "zone1": {
+            "type": "string",
+            "title": "The zone1 Schema",
+            "examples": [
+                "Australia/Adelaide"
+            ]
+        },
+        "datetime2": {
+            "type": "string",
+            "title": "The datetime2 Schema",
+            "examples": [
+                "2021-12-28T14:01:25"
+            ]
+        },
+        "zone2": {
+            "type": "string",
+            "title": "The zone2 Schema",
+            "examples": [
+                "Australia/Adelaide"
+            ]
+        },
+        "option": {
+            "type": "string",
+            "title": "The option Schema",
+            "examples": [
+                "s"
+            ]
+        }
+    },
+    "examples": [{
+        "datetime1": "2020-12-28T14:01:25",
+        "zone1": "Australia/Adelaide",
+        "datetime2": "2021-12-28T14:01:25",
+        "zone2": "Australia/Adelaide",
+        "option": "s"
+    }]
+}
