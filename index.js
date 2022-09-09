@@ -73,6 +73,7 @@ app.post("/datetime", (req, res) => {
             datezone1 = datezone2;
             datezone2 = tmp;
         }
+
         // calculate number of days
         resDays= datezone2.diff(datezone1, 'days');
 
@@ -86,17 +87,17 @@ app.post("/datetime", (req, res) => {
         switch(joption){
         // Convert to seconds
         case 's': case 'S':
-            result= datezone2.diff(datezone1, 'seconds', true).toFixed(2) + ' seconds';
+            result= datezone2.diff(datezone1, 'seconds') + ' seconds';
             break;
 
         // Convert to minutes
         case 'm': case 'M':
-            result= datezone2.diff(datezone1, 'minutes', true).toFixed(2) + ' minutes';
+            result= datezone2.diff(datezone1, 'minutes') + ' minutes';
             break;
 
         // Convert to hours
         case 'h': case 'H':
-            result= datezone2.diff(datezone1, 'hours', true).toFixed(2) + ' hours';
+            result= datezone2.diff(datezone1, 'hours') + ' hours';
             break;
 
         // Convert to years

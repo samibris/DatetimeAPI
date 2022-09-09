@@ -4,7 +4,8 @@
   "description": "The API is created with:\r * NodeJS\r * Express",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "jasmine"
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,10 @@
     "moment-business-days": "^1.2.0",
     "moment-duration-format": "^2.3.2",
     "moment-timezone": "^0.5.37",
+    "request": "^2.88.2",
     "validator": "^13.7.0"
+  },
+  "devDependencies": {
+    "jasmine": "^4.4.0"
   }
 }
