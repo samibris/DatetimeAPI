@@ -226,5 +226,107 @@ it("returns days=0, weekdays=0, weeks=0, hours=0", function(done) {
 });
 });
 
+it("returns error when it is not a leap-year ", function(done) {
+  var info = JSON.stringify({
+    datetime1: "2022-02-29T21:14:18",  
+    zone1: "Australia/Adelaide",
+    datetime2: "2022-09-08T06:44:25",
+    zone2: "America/Bogota",
+    option: "h"
+  });
+
+  request.post({
+    headers: {'content-type' : 'application/json'},
+    url:     base_url,
+    body:    info}, (error, response, body) =>  {
+  console.log('**Body:' + body);
+  expect(response.statusCode).toBe(400);
+  done();
+});
+});
+
+it("returns years in decimals ", function(done) {
+  var info = JSON.stringify({
+    datetime1: "1994-02-02T08:10:50",  
+    zone1: "Japan",
+    datetime2: "2022-09-10T20:01:01",
+    zone2: "America/Argentina/ComodRivadavia",
+    option: "y"
+  });
+
+  request.post({
+    headers: {'content-type' : 'application/json'},
+    url:     base_url,
+    body:    info}, (error, response, body) =>  {
+  console.log('**Body:' + body);
+  objBody = JSON.parse(body);
+  expect(objBody.days).toBe(10447);
+  expect(objBody.weekdays).toBe(7463);
+  expect(objBody.completeWeeks).toBe(1491);
+  expect(objBody.result).toBe('28.61 years');
+  done();
+});
+});
+
+it("returns hours = 250751 ", function(done) {
+  var info = JSON.stringify({
+    datetime1: "1994-02-02T08:10:50",  
+    zone1: "Japan",
+    datetime2: "2022-09-10T20:01:01",
+    zone2: "America/Argentina/ComodRivadavia",
+    option: "h"
+  });
+
+  request.post({
+    headers: {'content-type' : 'application/json'},
+    url:     base_url,
+    body:    info}, (error, response, body) =>  {
+  console.log('**Body:' + body);
+  objBody = JSON.parse(body);
+  expect(objBody.result).toBe('250751 hours');
+  done();
+});
+});
+
+it("returns minutes = 15045110 ", function(done) {
+  var info = JSON.stringify({
+    datetime1: "1994-02-02T08:10:50",  
+    zone1: "Japan",
+    datetime2: "2022-09-10T20:01:01",
+    zone2: "America/Argentina/ComodRivadavia",
+    option: "m"
+  });
+
+  request.post({
+    headers: {'content-type' : 'application/json'},
+    url:     base_url,
+    body:    info}, (error, response, body) =>  {
+  console.log('**Body:' + body);
+  objBody = JSON.parse(body);
+  expect(objBody.result).toBe('15045110 minutes');
+  done();
+});
+});
+
+it("returns seconds = 902706611 ", function(done) {
+  var info = JSON.stringify({
+    datetime1: "1994-02-02T08:10:50",  
+    zone1: "Japan",
+    datetime2: "2022-09-10T20:01:01",
+    zone2: "America/Argentina/ComodRivadavia",
+    option: "s"
+  });
+
+  request.post({
+    headers: {'content-type' : 'application/json'},
+    url:     base_url,
+    body:    info}, (error, response, body) =>  {
+  console.log('**Body:' + body);
+  objBody = JSON.parse(body);
+  expect(objBody.result).toBe('902706611 seconds');
+  done();
+});
+});
+
 });
 });

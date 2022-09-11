@@ -80,8 +80,71 @@ app.post("/datetime", (req, res) => {
         // calculate number of weekdays
         resWeekDays = datezone2.businessDiff(datezone1);
 
-        // calculate complete weeks
-        resCmpWeeks= datezone2.diff(datezone1, 'weeks');
+        // calculate complete weeks (from Monday to Sunday)
+       // resCmpWeeks= datezone2.diff(datezone1, 'weeks', true); //quitar
+        var resCmpWeeks = 0;
+        var daydate1 = datezone1.day();
+        var daydate2 = datezone2.day();
+        console.log(daydate1);
+        console.log(daydate2);
+        var startMonday = datezone1.clone();
+        var endMonday = datezone2.clone();
+    
+        if (daydate1 != 1){
+            //next monday
+            if (daydate1 == 0){
+                daydate1 = 7;
+            }
+            addDay = 8 - daydate1;
+            //addDay =  new Date(datezone1);
+            //startMonday =  datezone1.add(addDay, 'days');
+            startMonday = startMonday.add(addDay, 'days');
+            //startMonday.set({h: 0, m:0, s:0});
+            //startMonday = startMonday.toISOString();
+            console.log(startMonday);
+        }
+
+        if(startMonday < datezone2){
+            console.log('****startMonday < datezone2');
+            if (daydate2 != 1){
+                //previous sunday
+                if (daydate2 == 0){
+                    daydate2 = 7;
+                }
+        
+                //endMonday =  datezone2.subtract((daydate2 - 1), 'days');
+                endMonday = endMonday.subtract((daydate2 - 1), 'days');
+                //endMonday.set({h: 0, m: 0, s: 0});
+                //endMonday = endMonday.toISOString()
+                console.log(endMonday);
+            }              
+        }
+            
+        if(endMonday > startMonday){
+            console.log(datezone2);
+            console.log(endMonday);
+            console.log(datezone1);
+            console.log(startMonday);
+            if ((endMonday.isSame(datezone2))  && (startMonday.isSame(datezone1))){
+                console.log("they are same *****");
+                resCmpWeeks= endMonday.diff(startMonday, 'weeks');
+
+
+
+            }else{
+                 //console.log(startMonday.toISOString().substring(0 , 10));
+                //console.log(endMonday.toISOString().substring(0 , 10));
+                //startDate = moment((startMonday.toISOString().substring(0 , 10)), 'YYYY-MM-DD');
+                //endDate = moment((endMonday.toISOString().substring(0 , 10)), 'YYYY-MM-DD');
+                var startDate = moment(startMonday.format('YYYY') + '-' + startMonday.format('MM') + '-' + startMonday.format('DD'));
+                var endDate = moment(endMonday.format('YYYY') + '-' + endMonday.format('MM') + '-' + endMonday.format('DD'));
+                console.log(startDate);
+                console.log(endDate);
+                resCmpWeeks= endDate.diff(startDate, 'weeks');
+            }
+
+            
+        }
 
         // convert the result to seconds, minutes, hours or years
         switch(joption){
