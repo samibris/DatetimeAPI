@@ -64,8 +64,6 @@ app.post("/datetime", (req, res) => {
         // Convert to provided time zone
         var datezone1 = moment.tz(jdatetime1, jzone1);
         var datezone2 = moment.tz(jdatetime2, jzone2);
-        console.log(datezone1);
-        console.log(datezone2);
 
         // to avoid negative results, datezone1 is the earliest date
         if(datezone1 > datezone2){
@@ -73,77 +71,59 @@ app.post("/datetime", (req, res) => {
             datezone1 = datezone2;
             datezone2 = tmp;
         }
+        console.log(datezone1);
+        console.log(datezone2);
 
         // calculate number of days
         resDays= datezone2.diff(datezone1, 'days');
 
-        // calculate number of weekdays
+        // calculate number of weekdays (no saturdays or sundays)
         resWeekDays = datezone2.businessDiff(datezone1);
 
-        // calculate complete weeks (from Monday to Sunday)
-       // resCmpWeeks= datezone2.diff(datezone1, 'weeks', true); //quitar
+        // calculate complete weeks (from Monday to Monday)
         var resCmpWeeks = 0;
-        var daydate1 = datezone1.day();
-        var daydate2 = datezone2.day();
-        console.log(daydate1);
-        console.log(daydate2);
-        var startMonday = datezone1.clone();
-        var endMonday = datezone2.clone();
-    
-        if (daydate1 != 1){
-            //next monday
-            if (daydate1 == 0){
-                daydate1 = 7;
-            }
-            addDay = 8 - daydate1;
-            //addDay =  new Date(datezone1);
-            //startMonday =  datezone1.add(addDay, 'days');
-            startMonday = startMonday.add(addDay, 'days');
-            //startMonday.set({h: 0, m:0, s:0});
-            //startMonday = startMonday.toISOString();
-            console.log(startMonday);
-        }
-
-        if(startMonday < datezone2){
-            console.log('****startMonday < datezone2');
-            if (daydate2 != 1){
-                //previous sunday
-                if (daydate2 == 0){
-                    daydate2 = 7;
-                }
+        if (resDays >= 7){
+            var daydate1 = datezone1.day();
+            var daydate2 = datezone2.day();
+            var startMonday = datezone1.clone();
+            var endMonday = datezone2.clone();
         
-                //endMonday =  datezone2.subtract((daydate2 - 1), 'days');
-                endMonday = endMonday.subtract((daydate2 - 1), 'days');
-                //endMonday.set({h: 0, m: 0, s: 0});
-                //endMonday = endMonday.toISOString()
-                console.log(endMonday);
-            }              
-        }
-            
-        if(endMonday > startMonday){
-            console.log(datezone2);
-            console.log(endMonday);
-            console.log(datezone1);
-            console.log(startMonday);
-            if ((endMonday.isSame(datezone2))  && (startMonday.isSame(datezone1))){
-                console.log("they are same *****");
-                resCmpWeeks= endMonday.diff(startMonday, 'weeks');
-
-
-
-            }else{
-                 //console.log(startMonday.toISOString().substring(0 , 10));
-                //console.log(endMonday.toISOString().substring(0 , 10));
-                //startDate = moment((startMonday.toISOString().substring(0 , 10)), 'YYYY-MM-DD');
-                //endDate = moment((endMonday.toISOString().substring(0 , 10)), 'YYYY-MM-DD');
-                var startDate = moment(startMonday.format('YYYY') + '-' + startMonday.format('MM') + '-' + startMonday.format('DD'));
-                var endDate = moment(endMonday.format('YYYY') + '-' + endMonday.format('MM') + '-' + endMonday.format('DD'));
-                console.log(startDate);
-                console.log(endDate);
-                resCmpWeeks= endDate.diff(startDate, 'weeks');
+            //if day of earliest date is not Monday
+            if (daydate1 != 1){
+                if (daydate1 == 0){ //day() returns 0 for Sunday
+                    daydate1 = 7;
+                }
+                //calculate next monday of the earliest date
+                addDay = 8 - daydate1;
+                startMonday = startMonday.add(addDay, 'days');
             }
 
-            
+            // if earliest date is lower than final date
+            // vaidate if day of final date is not Monday
+            if(startMonday < datezone2){
+                if (daydate2 != 1){
+                   if (daydate2 == 0){ //day() returns 0 for Sunday
+                        daydate2 = 7;
+                    }
+                    // calculate previous monday of final date 
+                    endMonday = endMonday.subtract((daydate2 - 1), 'days');
+                }              
+            }
+                
+            if(endMonday > startMonday){
+                // if next Monday and previous Monday are not calculated,
+                // the result of resCmpWeeks is based on original dates
+                if ((endMonday.isSame(datezone2))  && (startMonday.isSame(datezone1))){
+                    resCmpWeeks= endMonday.diff(startMonday, 'weeks');
+
+                // if next Monday or previous Monday are calculated,
+                // the result of resCmpWeeks is based on those dates
+                }else{
+                    var startDate = moment(startMonday.format('YYYY') + '-' + startMonday.format('MM') + '-' + startMonday.format('DD'));
+                    var endDate = moment(endMonday.format('YYYY') + '-' + endMonday.format('MM') + '-' + endMonday.format('DD'));
+                    resCmpWeeks= endDate.diff(startDate, 'weeks');
+                }         
+            }
         }
 
         // convert the result to seconds, minutes, hours or years

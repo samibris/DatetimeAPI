@@ -328,5 +328,28 @@ it("returns seconds = 902706611 ", function(done) {
 });
 });
 
+it("returns hours = 406", function(done) {
+  var info = JSON.stringify({
+    datetime1: "2022-09-04T06:14:18",  
+    zone1: "Pacific/Auckland",
+    datetime2: "2022-09-20T08:01:13",
+    zone2: "America/Atka",
+    option: "h"
+  });
+
+  request.post({
+    headers: {'content-type' : 'application/json'},
+    url:     base_url,
+    body:    info}, (error, response, body) =>  {
+  console.log('**Body:' + body);
+  objBody = JSON.parse(body);
+  expect(objBody.days).toBe(16);
+  expect(objBody.weekdays).toBe(12);
+  expect(objBody.completeWeeks).toBe(2);
+  expect(objBody.result).toBe('406 hours');
+  done();
+});
+});
+
 });
 });

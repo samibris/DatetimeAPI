@@ -1,36 +1,36 @@
 # DatetimeAPI
 
 ## General Info
+xxxxx
 
 ## Technologies
 The API is created with:
 * NodeJS
 * Express
+* Jasmine - Unit tests
 
 ## Setup
-npm init -y  // New NodeJS project
-package.json --> "start": "node index.js"
 npm install express
-npm install moment-timezone
-npm install moment-duration-format
-npm install moment-business-days
-npm install validator
+sudo apt install node-jasmine
 
-## Code Examples
+## Usage
 
 JSON format Input parameters
 {
-	"datetime1": "2016-11-17T01:55:10",
-	"zone1": "Australia/Adelaide",
-	"datetime2": "2014-11-17T23:55:30",
-	"zone2": "America/Bogota", 
-	"option": "1"
+	"datetime1": "1987-07-13T16:14:18",
+	"zone1":  "Asia/Anadyr",
+	"datetime2":  "2022-10-02T23:13:13",
+	"zone2": "America/Bogota",
+	"option": "h"
 }
 
 JSON format request
-
-## Sources
-$ https://www.youtube.com/watch?v=TcvOgwQPsSo
+{
+	"days": 12866,
+	"weekdays": 9190,
+	"completeWeeks": 1837,
+	"result": "308784 hours"
+}
 
 ## Other Information
 $ Author: Sandra Bonilla
